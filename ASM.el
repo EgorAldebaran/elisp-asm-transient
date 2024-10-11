@@ -1,8 +1,37 @@
+(transient-define-prefix magic-asm-transient ()
+  "Магическая команда АСМА"
+  ["Магическая команда АСМА"
+   ("j" "mov" (lambda () 
+                (interactive) 
+                (insert "mov ") 
+                (register-destination-transient)))
+   ("b" "movb ПЕРЕМЕЩЕНИЕ 1 БАЙТА используй 8-битные значения" (lambda () 
+								 (interactive) 
+								 (insert "movb ") 
+								 (register-destination-transient)))
+   ("w" "movw ПЕРЕМЕЩЕНИЕ СЛОВА (2 БАЙТА)" (lambda () 
+					     (interactive) 
+					     (insert "movw ") 
+					     (register-destination-transient)))
+   ("l" "movl ПЕРЕМЕЩЕНИЕ ДВОЙНОГО СЛОВА (4 байта)" (lambda () 
+						      (interactive) 
+						      (insert "movl ") 
+						      (register-destination-transient)))
+   ("q" "movq ПЕРЕМЕЩЕНИЕ КВАДРАТНОГО-СЛОВА (8 байт)" (lambda () 
+							(interactive) 
+							(insert "movq ") 
+							(register-destination-transient)))
+   ]
+  ["Опции"
+   ("-q" "Выход" transient-quit-one)])
+
 (transient-define-prefix register-destination-transient ()
   "Регистр, куда отправляются данные"
   ["Регистр, втягивающий Свет Информации"
    ("v" "Твое конкретное Значение" (lambda () (interactive) (insert (format "$%s, " (read-string "?$ "))) (register-sourcer-transient)))
-   ("a" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax, ") (register-sourcer-transient)))
+   ("j" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax, ") (register-sourcer-transient))
+    :description "RAX (Accumulator) - ВЕЧНОЕ - КОРОЛЕВСКАЯ ЗВЕЗДА ФОМАЛЬГАУТ"
+    :face 'gold-for-asm)
    ("b" "RBX (Base Register)" (lambda () (interactive) (insert "%rbx, ") (register-sourcer-transient)))
    ("c" "RCX (Counter Register)" (lambda () (interactive) (insert "%rcx, ") (register-sourcer-transient)))
    ("i" "RIP" (lambda () (interactive) (insert "%rip, ") (register-sourcer-transient))
@@ -55,7 +84,9 @@
   "Регистр - источник света"
   ["Регистр - источник Света Информации"
    ("a" "Твое конкретное значение" (lambda () (interactive) (insert (format "$%s" (read-string))) (finish-instruction)))
-   ("j" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax") (finish-instruction)))
+   ("j" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax") (finish-instruction))
+    :description "RAX (Accumulator) - ВЕЧНОЕ - КОРОЛЕВСКАЯ ЗВЕЗДА ФОМАЛЬГАУТ"
+    :face 'gold-for-asm)
    ("h" "RBX (Base Register)" (lambda () (interactive) (insert "%rbx") (finish-instruction)))
    ("n" "RCX (Counter Register)" (lambda () (interactive) (insert "%rcx") (finish-instruction)))
    ("i" "RIP (Instruction Pointer)" (lambda () (interactive) (insert "%rip") (finish-instruction))
@@ -208,4 +239,18 @@
     (read-string styled-prompt)))
 
 ;;;(my-read-string-with-style "Введите значение: ")
+
+(defun my-custom-new-line ()
+  (interactive)
+  (if (string-equal (file-name-extension buffer-file-name) "S")
+      (funcall )
+      (message "ВЕЛИКИЙ АСМ ПРИДАСТ СИЛУ!!!")  
+    (newline)))
+
+(define-key global-map (kbd "C-j") 'my-custom-new-line)
+
+
+
+
+
 
