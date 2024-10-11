@@ -21,9 +21,51 @@
 							(interactive) 
 							(insert "movq ") 
 							(register-destination-transient)))
+   ("c" "КОММЕНТАРИЙ" (lambda ()
+			 (interactive)
+			 (asm-comments)))
+   ("s" "НАЧАЛО" (lambda ()
+		   (interactive)
+		   (insert ".section .text")
+		   (pressReturn)
+		   (indent-for-tab-command)
+		   (insert ".global _start")
+		   (pressReturn)
+		   (insert "_start:")
+		   (pressReturn)))
+   ("e" "КОНЕЦ" (lambda ()
+		  (interactive)
+		  (insert "#====ЗАВЕРШЕНИЕ====#")
+		  (pressReturn)
+		  (indent-for-tab-command)
+		  (insert "mov $1, %rax")
+		  (pressReturn)
+		  (indent-for-tab-command)
+		  (insert "xor %rbx, %rbx")
+		  (pressReturn)
+		  (indent-for-tab-command)
+		  (insert "int $0x80")))
    ]
   ["Опции"
    ("-q" "Выход" transient-quit-one)])
+
+(transient-define-prefix asm-comments ()
+  "Комментарии для АСМА"
+  ["Комментарии для АСМА"
+   ("b" "Граница"
+    (lambda ()
+      (interactive)
+      (indent-for-tab-command)
+      (insert "#------------------#"))
+    (finish-instruction))
+   ("c" "Комментарий"
+    (lambda ()
+      (interactive)
+      (indent-for-tab-command)
+      (insert (format "#--%s--#" (read-string "Комментарий: "))))
+    (finish-instruction))
+   ])
+
 
 (transient-define-prefix register-destination-transient ()
   "Регистр, куда отправляются данные"
@@ -243,14 +285,8 @@
 (defun my-custom-new-line ()
   (interactive)
   (if (string-equal (file-name-extension buffer-file-name) "S")
-      (funcall )
+      (funcall 'magic-asm-transient)
       (message "ВЕЛИКИЙ АСМ ПРИДАСТ СИЛУ!!!")  
     (newline)))
 
 (define-key global-map (kbd "C-j") 'my-custom-new-line)
-
-
-
-
-
-
