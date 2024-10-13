@@ -1,31 +1,48 @@
 (transient-define-prefix magic-asm-transient ()
   "Магическая команда АСМА"
-  ["Магическая команда АСМА"
+  ["Магическая команда АСМА\n"
    ("j" "mov" (lambda () 
-                (interactive) 
+                (interactive)
+		(indent-for-tab-command)
                 (insert "mov ") 
                 (register-destination-transient)))
+   ("pu" "push" (lambda ()
+		  (interactive)
+		  (indent-for-tab-command)
+		  (insert "push ")
+		  (register-sourcer-transient)))
+   ("po" "pop" (lambda ()
+		 (interactive)
+		 (indent-for-tab-command)
+		 (insert "pop ")
+		 (register-sourcer-transient)))
    ("b" "movb ПЕРЕМЕЩЕНИЕ 1 БАЙТА используй 8-битные значения" (lambda () 
-								 (interactive) 
+								 (interactive)
+								 (indent-for-tab-command)
 								 (insert "movb ") 
 								 (register-destination-transient)))
    ("w" "movw ПЕРЕМЕЩЕНИЕ СЛОВА (2 БАЙТА)" (lambda () 
-					     (interactive) 
+					     (interactive)
+					     (indent-for-tab-command)
 					     (insert "movw ") 
 					     (register-destination-transient)))
    ("l" "movl ПЕРЕМЕЩЕНИЕ ДВОЙНОГО СЛОВА (4 байта)" (lambda () 
-						      (interactive) 
+						      (interactive)
+						      (indent-for-tab-command)
 						      (insert "movl ") 
 						      (register-destination-transient)))
    ("q" "movq ПЕРЕМЕЩЕНИЕ КВАДРАТНОГО-СЛОВА (8 байт)" (lambda () 
-							(interactive) 
+							(interactive)
+							(indent-for-tab-command)
 							(insert "movq ") 
 							(register-destination-transient)))
    ("c" "КОММЕНТАРИЙ" (lambda ()
-			 (interactive)
+			(interactive)
+			(indent-for-tab-command)
 			 (asm-comments)))
    ("s" "НАЧАЛО" (lambda ()
 		   (interactive)
+		   (indent-for-tab-command)
 		   (insert ".section .text")
 		   (pressReturn)
 		   (indent-for-tab-command)
@@ -35,6 +52,7 @@
 		   (pressReturn)))
    ("e" "КОНЕЦ" (lambda ()
 		  (interactive)
+		  (indent-for-tab-command)
 		  (insert "#====ЗАВЕРШЕНИЕ====#")
 		  (pressReturn)
 		  (indent-for-tab-command)
@@ -56,13 +74,13 @@
     (lambda ()
       (interactive)
       (indent-for-tab-command)
-      (insert "#------------------#"))
+      (insert "#------------------#\n"))
     (finish-instruction))
    ("c" "Комментарий"
     (lambda ()
       (interactive)
       (indent-for-tab-command)
-      (insert (format "#--%s--#" (read-string "Комментарий: "))))
+      (insert (format "#--%s--#\n" (read-string "Комментарий: "))))
     (finish-instruction))
    ])
 
@@ -70,7 +88,6 @@
 (transient-define-prefix register-destination-transient ()
   "Регистр, куда отправляются данные"
   ["Регистр, втягивающий Свет Информации"
-   ("v" "Твое конкретное Значение" (lambda () (interactive) (insert (format "$%s, " (read-string "?$ "))) (register-sourcer-transient)))
    ("j" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax, ") (register-sourcer-transient))
     :description "RAX (Accumulator) - ВЕЧНОЕ - КОРОЛЕВСКАЯ ЗВЕЗДА ФОМАЛЬГАУТ"
     :face 'gold-for-asm)
@@ -125,7 +142,6 @@
 (transient-define-prefix register-sourcer-transient ()
   "Регистр - источник света"
   ["Регистр - источник Света Информации"
-   ("a" "Твое конкретное значение" (lambda () (interactive) (insert (format "$%s" (read-string))) (finish-instruction)))
    ("j" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax") (finish-instruction))
     :description "RAX (Accumulator) - ВЕЧНОЕ - КОРОЛЕВСКАЯ ЗВЕЗДА ФОМАЛЬГАУТ"
     :face 'gold-for-asm)
@@ -178,8 +194,9 @@
    ("-q" "Выход" transient-quit-one)])
 
 (defun finish-instruction ()
-  (insert "\n")  ; Завершаем строку новой строкой
-  (transient-quit-one))  ; Завершаем текущий транзит
+  (insert "\n")
+  ;;;;;завершение текущего транзита
+  (transient-quit-one))
 
 (global-set-key (kbd "C-c t") 'magic-asm-transient)
 
