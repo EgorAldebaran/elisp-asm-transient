@@ -32,7 +32,7 @@
        ("le" "lea ЗАГРУЗИТЬ АДРЕС ПЕРЕМЕННОЙ" (lambda () 
 							     (interactive)
 							     (indent-for-tab-command)
-							     (insert (format "\nlea %s" (read-string "какую переменную загрузить? "))) 
+							     (insert (format "\lea %s(%%rip), " (read-string "какую переменную загрузить? "))) 
 							     (register-sourcer-transient)))
        ;;;;----место для добавления перемещений
     ]
