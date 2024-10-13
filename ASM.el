@@ -1,42 +1,73 @@
 (transient-define-prefix magic-asm-transient ()
-  "Магическая команда АСМА"
-  ["Магическая команда АСМА\n"
-   ("j" "mov" (lambda () 
-                (interactive)
-		(indent-for-tab-command)
-                (insert "mov ") 
-                (register-destination-transient)))
-   ("pu" "push" (lambda ()
-		  (interactive)
-		  (indent-for-tab-command)
-		  (insert "push ")
-		  (register-sourcer-transient)))
-   ("po" "pop" (lambda ()
-		 (interactive)
+  "Магические команды Великого АСМА"
+  [
+   "Магические команды ВЕЛИКОГО АСМА\n" 
+   [
+    "Перемещения Тетраморфа"
+    ("j" "mov" (lambda () 
+                 (interactive)
 		 (indent-for-tab-command)
-		 (insert "pop ")
-		 (register-sourcer-transient)))
-   ("b" "movb ПЕРЕМЕЩЕНИЕ 1 БАЙТА используй 8-битные значения" (lambda () 
+                 (insert "mov ") 
+                 (register-destination-transient)))
+       ("b" "movb ПЕРЕМЕЩЕНИЕ 1 БАЙТА используй 8-битные значения" (lambda () 
 								 (interactive)
 								 (indent-for-tab-command)
 								 (insert "movb ") 
 								 (register-destination-transient)))
-   ("w" "movw ПЕРЕМЕЩЕНИЕ СЛОВА (2 БАЙТА)" (lambda () 
-					     (interactive)
-					     (indent-for-tab-command)
-					     (insert "movw ") 
-					     (register-destination-transient)))
-   ("l" "movl ПЕРЕМЕЩЕНИЕ ДВОЙНОГО СЛОВА (4 байта)" (lambda () 
-						      (interactive)
-						      (indent-for-tab-command)
-						      (insert "movl ") 
-						      (register-destination-transient)))
-   ("q" "movq ПЕРЕМЕЩЕНИЕ КВАДРАТНОГО-СЛОВА (8 байт)" (lambda () 
-							(interactive)
-							(indent-for-tab-command)
-							(insert "movq ") 
-							(register-destination-transient)))
-   ("c" "КОММЕНТАРИЙ" (lambda ()
+       ("w" "movw ПЕРЕМЕЩЕНИЕ СЛОВА (2 БАЙТА)" (lambda () 
+						 (interactive)
+						 (indent-for-tab-command)
+						 (insert "movw ") 
+						 (register-destination-transient)))
+       ("l" "movl ПЕРЕМЕЩЕНИЕ ДВОЙНОГО СЛОВА (4 байта)" (lambda () 
+							  (interactive)
+							  (indent-for-tab-command)
+							  (insert "movl ") 
+							  (register-destination-transient)))
+       ("q" "movq ПЕРЕМЕЩЕНИЕ КВАДРАТНОГО-СЛОВА (8 байт)" (lambda () 
+							    (interactive)
+							    (indent-for-tab-command)
+							    (insert "movq ") 
+							    (register-destination-transient)))
+       ;;;;----место для добавления перемещений
+    ]
+   [
+    "Тетраморф и Платформа (КУБ)"
+    ("pu" "push" (lambda ()
+		   (interactive)
+		   (indent-for-tab-command)
+		   (insert "push ")
+		   (register-sourcer-transient)))
+    ("po" "pop" (lambda ()
+		  (interactive)
+		  (indent-for-tab-command)
+		  (insert "pop ")
+		  (register-sourcer-transient)))
+    ;;;;----место для работы с платформой
+    ]
+
+      [
+    "Состояние Тетраморфа"
+    ("pu" "push" (lambda ()
+		   (interactive)
+		   (indent-for-tab-command)
+		   (insert "push ")
+		   (register-sourcer-transient)))
+    ("po" "pop" (lambda ()
+		  (interactive)
+		  (indent-for-tab-command)
+		  (insert "pop ")
+		  (register-sourcer-transient)))
+    ;;;;----место для работы с состоянием флагами
+    ]
+      
+   ]
+  
+  [
+
+   [
+    "Служебные Команды"
+    ("c" "КОММЕНТАРИЙ" (lambda ()
 			(interactive)
 			(indent-for-tab-command)
 			 (asm-comments)))
@@ -64,8 +95,54 @@
 		  (indent-for-tab-command)
 		  (insert "int $0x80")))
    ]
-  ["Опции"
-   ("-q" "Выход" transient-quit-one)])
+   [
+    "Служебные Команды"
+    ("c" "КОММЕНТАРИЙ" (lambda ()
+			(interactive)
+			(indent-for-tab-command)
+			 (asm-comments)))
+   ("s" "НАЧАЛО" (lambda ()
+		   (interactive)
+		   (indent-for-tab-command)
+		   (insert ".section .text")
+		   (pressReturn)
+		   (indent-for-tab-command)
+		   (insert ".global _start")
+		   (pressReturn)
+		   (insert "_start:")
+		   (pressReturn)))
+   ("e" "КОНЕЦ" (lambda ()
+		  (interactive)
+		  (indent-for-tab-command)
+		  (insert "#====ЗАВЕРШЕНИЕ====#")
+		  (pressReturn)
+		  (indent-for-tab-command)
+		  (insert "mov $1, %rax")
+		  (pressReturn)
+		  (indent-for-tab-command)
+		  (insert "xor %rbx, %rbx")
+		  (pressReturn)
+		  (indent-for-tab-command)
+		  (insert "int $0x80")))
+   ]
+   
+   [
+    :description "Информация"
+    ("-q" "Выйти из транзита" transient-quit-one)
+    ]
+
+   [
+    :description "Информация"
+    ("-q" "Выйти из транзита" transient-quit-one)
+    ]
+
+   [
+    :description "Информация"
+    ("-q" "Выйти из транзита" transient-quit-one)
+    ]
+
+   ]
+  )
 
 (transient-define-prefix asm-comments ()
   "Комментарии для АСМА"
