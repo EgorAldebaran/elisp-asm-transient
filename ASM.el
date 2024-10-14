@@ -35,7 +35,7 @@
     ("-mv" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
 						 (interactive)
 						 (indent-for-tab-command)
-						 (insert (format "mov %s\(%%rip\), " asm-name-number-data))
+						 (insert (format "mov %s\(%%rip\), " (helm-asm-parse-data)))
 						 (register-sourcer-transient)))
     ("le" "lea ЗАГРУЗИТЬ АДРЕС ПЕРЕМЕННОЙ" (lambda () 
 					     (interactive)
@@ -508,63 +508,52 @@
   (let ((header (format "%-20s | %-20s\n" "ASM-DATA" "ASM-VALUE"))
 	(separator (make-string 45 ?-))
 	(table-rows ""))
-    (dolist (i (asm-file-to-list (buffer-file-name))) 
+    (dolist (i (asm-read-section-data (buffer-file-name))) 
       (setq table-rows
 	    (concat table-rows (format "%-20s | %-20s\n" "ASM-DATA:" i))))
     (message "\n%s\n%s\n%s" header separator table-rows)))
+;;;;(asm-info-data-section)
+;;;(asm-read-section-data "../asm.S")
 
-(defun asm-file-to-list (file-path)
-  "Прочитать файл с ассемблерным кодом и вернуть его содержимое как список строк."
-  (with-temp-buffer
-    (insert-file-contents file-path)
-    ;; t для удаления пустых строк
-    (split-string (buffer-string) "\n" t)))
-;;;(asm-file-to-list "../asm.S")
+(defun asm-parse-data ()
+  "собираю данные с секций"
+  (let ((not-section-name '()))
+    (dolist (i (asm-read-section-data (buffer-file-name)))
+      (if (not (string-match-p  "section" i))
+	  (push i not-section-name)))
+    not-section-name))
+;;;(asm-parse-data)
+
+(defun helm-asm-parse-data ()
+  (let* ((asm-data (helm :sources (helm-build-sync-source "ДАННЫЕ АСМА С СЕКЦИЙ"
+				    :candidates (asm-parse-data)
+				    :fuzzy-match t)
+			 :buffer "*ASM static and global data*")))
+    asm-data))
+;;;;(insert (format "%s" (helm-asm-parse-data)))
+
+
 ;;(asm-parse-sections "../asm.S")
-(defun asm-file-to-list (file-path)
+(defun asm-read-section-data (file-path)
   "Прочитать файл с ассемблерным кодом и вернуть его содержимое как список строк, исключая строки после .section .text."
-  (with-temp-buffer
-    (insert-file-contents file-path)
+  (let* ((source (with-temp-buffer
+		   (insert-file-contents file-path)
+		   (replace-regexp-in-string "[ \t]+" "" (buffer-string) "\n" t))))
+    (setq source (split-string source))
     (let ((result '())
-          (found-text-section nil))  ;; Переменная для отслеживания нахождения .section .text
-      (dolist (line (split-string (buffer-string) "\n" t))
-        (if (and (not found-text-section) (string-match-p "\\.section[ \t]+\\.text" line))
-            (setq found-text-section t)  ;; Если встретили .section .text, помечаем
-          (when (not found-text-section)
-            (push line result))))  ;; Добавляем строку в результат, если не встретили .section .text
-      (nreverse result))))  ;; Возвращаем результат в правильном порядке
+	  (found-text-section nil))
+      (dolist (i source)
+	(if (and (not found-text-section)
+		 (string-match-p "\\.section+\\.text" i))
+	    (setq found-text-section t)
+	  (when (not found-text-section)
+	    (push i result))))
+    (nreverse result))))
 
 
-(defun asm-parse-sections (file-path)
-  "Прочитать файл с ассемблерным кодом и извлечь переменные из секций .data и .bss."
-  (let ((data-section-vars '())
-        (bss-section-vars '())
-        (current-section nil))
-    (with-temp-buffer
-      (insert-file-contents file-path)
-      (dolist (line (split-string (buffer-string) "\n" t))
-        (cond
-         ;; Проверяем, начинается ли секция .data
-         ((string-match "^\\s-*\\.data" line)
-          (setq current-section '.data))
 
-         ;; Проверяем, начинается ли секция .bss
-         ((string-match "^\\s-*\\.bss" line)
-          (setq current-section '.bss))
 
-         ;; Проверяем, если находимся в секции .data, и захватываем переменные
-         ((and (eq current-section '.data)
-               (string-match "^\\s-*\\([a-zA-Z0-9_]+\\):" line))
-          (let ((var-name (match-string 1 line)))
-            (push var-name data-section-vars)))
 
-         ;; Проверяем, если находимся в секции .bss, и захватываем переменные
-         ((and (eq current-section '.bss)
-               (string-match "^\\s-*\\([a-zA-Z0-9_]+\\):" line))
-          (let ((var-name (match-string 1 line)))
-            (push var-name bss-section-vars))))))
-    ;; Возвращаем список с переменными из обеих секций
-    (list :data (reverse data-section-vars)
-          :bss (reverse bss-section-vars))))
+
 
 
