@@ -35,7 +35,7 @@
     ("-mv" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
 						 (interactive)
 						 (indent-for-tab-command)
-						 (insert (format "mov %s\(%%rip\), " (helm-asm-parse-data)))
+						 (insert (format "mov %s\(%%rip\), " (substring (helm-asm-parse-data) 0 -1)))
 						 (register-sourcer-transient)))
     ("le" "lea ЗАГРУЗИТЬ АДРЕС ПЕРЕМЕННОЙ" (lambda () 
 					     (interactive)
