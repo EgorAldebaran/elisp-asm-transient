@@ -1,3 +1,6 @@
+;;;;global section
+(setq asm-name-number-data "")
+
 (transient-define-prefix magic-asm-transient ()
   "Магические команды Великого АСМА"
   [
@@ -5,35 +8,40 @@
    [
     "Перемещения Тетраморфа"
     ("mv" "mov" (lambda () 
-                 (interactive)
-		 (indent-for-tab-command)
-                 (insert "mov ") 
-                 (register-destination-transient)))
-       ("mb" "movb ПЕРЕМЕЩЕНИЕ 1 БАЙТА используй 8-битные значения" (lambda () 
-								 (interactive)
-								 (indent-for-tab-command)
-								 (insert "movb ") 
-								 (register-destination-transient)))
-       ("mw" "movw ПЕРЕМЕЩЕНИЕ СЛОВА (2 БАЙТА)" (lambda () 
-						 (interactive)
-						 (indent-for-tab-command)
-						 (insert "movw ") 
-						 (register-destination-transient)))
-       ("ml" "movl ПЕРЕМЕЩЕНИЕ ДВОЙНОГО СЛОВА (4 байта)" (lambda () 
+                  (interactive)
+		  (indent-for-tab-command)
+                  (insert "mov ") 
+                  (register-destination-transient)))
+    ("mb" "movb ПЕРЕМЕЩЕНИЕ 1 БАЙТА используй 8-битные значения" (lambda () 
+								   (interactive)
+								   (indent-for-tab-command)
+								   (insert "movb ") 
+								   (register-destination-transient)))
+    ("mw" "movw ПЕРЕМЕЩЕНИЕ СЛОВА (2 БАЙТА)" (lambda () 
+					       (interactive)
+					       (indent-for-tab-command)
+					       (insert "movw ") 
+					       (register-destination-transient)))
+    ("ml" "movl ПЕРЕМЕЩЕНИЕ ДВОЙНОГО СЛОВА (4 байта)" (lambda () 
+							(interactive)
+							(indent-for-tab-command)
+							(insert "movl ") 
+							(register-destination-transient)))
+    ("mq" "movq ПЕРЕМЕЩЕНИЕ КВАДРАТНОГО-СЛОВА (8 байт)" (lambda () 
 							  (interactive)
 							  (indent-for-tab-command)
-							  (insert "movl ") 
+							  (insert "movq ") 
 							  (register-destination-transient)))
-       ("mq" "movq ПЕРЕМЕЩЕНИЕ КВАДРАТНОГО-СЛОВА (8 байт)" (lambda () 
-							    (interactive)
-							    (indent-for-tab-command)
-							    (insert "movq ") 
-							    (register-destination-transient)))
-       ("le" "lea ЗАГРУЗИТЬ АДРЕС ПЕРЕМЕННОЙ" (lambda () 
-							     (interactive)
-							     (indent-for-tab-command)
-							     (insert (format "\lea %s(%%rip), " (read-string "какую переменную загрузить? "))) 
-							     (register-sourcer-transient)))
+    ("-mv" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
+						 (interactive)
+						 (indent-for-tab-command)
+						 (insert (format "mov %s\(%%rip\), " asm-name-number-data))
+						 (register-sourcer-transient)))
+    ("le" "lea ЗАГРУЗИТЬ АДРЕС ПЕРЕМЕННОЙ" (lambda () 
+					     (interactive)
+					     (indent-for-tab-command)
+					     (insert (format "\lea %s(%%rip), " (read-string "какую переменную загрузить? "))) 
+					     (register-sourcer-transient)))
        ;;;;----место для добавления перемещений
     ]
    [
@@ -49,13 +57,13 @@
 		  (insert "pop ")
 		  (register-sourcer-transient)))
     ("su" "sub - выделяем место в КУБЕ" (lambda ()
-		  (interactive)
-		  (indent-for-tab-command)
-		  (insert (format "sub $%d, %%rsp\n" (read-number "сколько места выделяем? ")))))
+					  (interactive)
+					  (indent-for-tab-command)
+					  (insert (format "sub $%d, %%rsp\n" (read-number "сколько места выделяем? ")))))
     ;;;;----место для работы с платформой
     ]
 
-      [
+   [
     "Состояние Тетраморфа"
     ("pu" "push" (lambda ()
 		   (interactive)
@@ -69,74 +77,85 @@
 		  (register-sourcer-transient)))
     ;;;;----место для работы с состоянием флагами
     ]
-      
+   
    ]
   
   [
 
    [
     "Служебные Команды"
-    ("c" "КОММЕНТАРИЙ" (lambda ()
-			(interactive)
-			(indent-for-tab-command)
-			 (asm-comments)))
-   ("be" "НАЧАЛО" (lambda ()
-		   (interactive)
-		   (indent-for-tab-command)
-		   (insert ".section .text")
-		   (pressReturn)
-		   (indent-for-tab-command)
-		   (insert ".global _start")
-		   (pressReturn)
-		   (insert "_start:")
-		   (pressReturn)))
-   ("en" "КОНЕЦ" (lambda ()
-		  (interactive)
-		  (indent-for-tab-command)
-		  (insert "#====ЗАВЕРШЕНИЕ====#")
-		  (pressReturn)
-		  (indent-for-tab-command)
-		  (insert "mov $1, %rax")
-		  (pressReturn)
-		  (indent-for-tab-command)
-		  (insert "xor %rbx, %rbx")
-		  (pressReturn)
-		  (indent-for-tab-command)
-		  (insert "int $0x80")))
-   ]
+    ("-c" "КОММЕНТАРИЙ" (lambda ()
+			  (interactive)
+			  (indent-for-tab-command)
+			  (asm-comments)))
+    ("be" "НАЧАЛО" (lambda ()
+		     (interactive)
+		     (indent-for-tab-command)
+		     (insert ".section .text")
+		     (pressReturn)
+		     (indent-for-tab-command)
+		     (insert ".global _start")
+		     (pressReturn)
+		     (insert "_start:")
+		     (pressReturn)))
+    ("en" "КОНЕЦ" (lambda ()
+		    (interactive)
+		    (indent-for-tab-command)
+		    (insert "#====ЗАВЕРШЕНИЕ====#")
+		    (pressReturn)
+		    (indent-for-tab-command)
+		    (insert "mov $1, %rax")
+		    (pressReturn)
+		    (indent-for-tab-command)
+		    (insert "xor %rbx, %rbx")
+		    (pressReturn)
+		    (indent-for-tab-command)
+		    (insert "int $0x80")))
+    ]
    [
     "Служебные Команды"
-    ("c" "КОММЕНТАРИЙ" (lambda ()
-			(interactive)
-			(indent-for-tab-command)
-			 (asm-comments)))
-   ("be" "НАЧАЛО" (lambda ()
-		   (interactive)
-		   (indent-for-tab-command)
-		   (insert ".section .text")
-		   (pressReturn)
-		   (indent-for-tab-command)
-		   (insert ".global _start")
-		   (pressReturn)
-		   (insert "_start:")
-		   (pressReturn)))
-   ("en" "КОНЕЦ" (lambda ()
-		  (interactive)
-		  (indent-for-tab-command)
-		  (insert "#====ЗАВЕРШЕНИЕ====#")
-		  (pressReturn)
-		  (indent-for-tab-command)
-		  (insert "mov $1, %rax")
-		  (pressReturn)
-		  (indent-for-tab-command)
-		  (insert "xor %rbx, %rbx")
-		  (pressReturn)
-		  (indent-for-tab-command)
-		  (insert "int $0x80")))
-   ]
+    ("-c" "КОММЕНТАРИЙ" (lambda ()
+			  (interactive)
+			  (indent-for-tab-command)
+			  (asm-comments)))
+    ("be" "НАЧАЛО" (lambda ()
+		     (interactive)
+		     (indent-for-tab-command)
+		     (insert ".section .text")
+		     (pressReturn)
+		     (indent-for-tab-command)
+		     (insert ".global _start")
+		     (pressReturn)
+		     (insert "_start:")
+		     (pressReturn)))
+    ("en" "КОНЕЦ" (lambda ()
+		    (interactive)
+		    (indent-for-tab-command)
+		    (insert "#====ЗАВЕРШЕНИЕ====#")
+		    (pressReturn)
+		    (indent-for-tab-command)
+		    (insert "mov $1, %rax")
+		    (pressReturn)
+		    (indent-for-tab-command)
+		    (insert "xor %rbx, %rbx")
+		    (pressReturn)
+		    (indent-for-tab-command)
+		    (insert "int $0x80")))
+    ]
    
    [
+    :description "СЕКЦИЯ ДАННЫХ"
+    ("ss" "section" (lambda ()
+		      (interactive)
+		      (asm-section-data)))
+    ("-q" "Выйти из транзита" transient-quit-one)
+    ]
+
+   [
     :description "Информация"
+    ("i" "info" (lambda ()
+		  (interactive)
+		  (asm-info)))
     ("-q" "Выйти из транзита" transient-quit-one)
     ]
 
@@ -145,11 +164,40 @@
     ("-q" "Выйти из транзита" transient-quit-one)
     ]
 
-   [
-    :description "Информация"
-    ("-q" "Выйти из транзита" transient-quit-one)
-    ]
+   ]
+  )
 
+(transient-define-prefix asm-section-data ()
+  "Секция данных для АСМА"
+  [
+   "Секция статичных данных, глобальных и констант для АСМА"
+   ("d" "data" (lambda ()
+		 (interactive)
+		 (indent-for-tab-command)
+		 (insert ".section .data\n")
+		 (asm-section-data)))
+   ("n" "number-variable" (lambda ()
+			    (interactive)
+			    (let* ((variable-name (read-string "Название переменной: "))
+				   (number (read-number "Введи значение переменной - числа "))
+				   (choice (read-string "(b) - 1 байт 8 би от -128 до 128 for .byte\n(w) 2 байта 16 бит- от -32,768 до 32,767 for .word \n(d) 4байта 32 бита от -2,147,483,648 до 2,147,483,647- for dword\т(q) 8 байт 64 бита  0 до 18,446,744,073,709,551,615- for qword: "))
+				   (return-choice
+				    (cond ((equal choice "b")
+					   ".byte")
+					  ((equal choice "w")
+					   ".word")
+					  ((equal choice "d")
+					   ".long")
+					  ((equal choice "q")
+					   ".quard")
+					  (t (message "Введи корректное значение")))))
+			      (insert (format "\%s:\n\t%s %#x\n"
+					      variable-name
+					      return-choice
+					      number
+					      ))
+			      (setq asm-name-number-data variable-name))))
+   ("q" "quit" transient-quit-one)
    ]
   )
 
@@ -191,13 +239,13 @@
     :description "RSP - БУДУЩЕЕ В ВЕЛИКОМ КУБЕ - КОРОЛЕВСКАЯ ЗВЕЗДА АЛЬДЕБАРАН"
     :face 'light-gray-for-asm-asm)
    ("rd" "RDX (Data Register)" (lambda () (interactive) (insert "%rdx, ") (register-sourcer-transient)))
-    ("0" "ТВОЙ ВАРИАНТ" (lambda () 
+   ("0" "ТВОЙ ВАРИАНТ" (lambda () 
                          (interactive)
                          (let ((user-input (read-string (propertize "что напишем? " 'face '(:foreground "orange" :weight bold)))))
                            (insert (format "%s, " user-input)))
                          (register-sourcer-transient))
-     :description "Твой вариант..."
-     :face 'light-gray-for-asm)
+    :description "Твой вариант..."
+    :face 'light-gray-for-asm)
    ("-ra" "(RAX)" (lambda () (interactive) (insert "(%rax), ") (register-sourcer-transient)))
    ("-rb" "(RBX)" (lambda () (interactive) (insert "(%rbx), ") (register-sourcer-transient)))
    ("-rc" "(RCX)" (lambda () (interactive) (insert "(%rcx), ") (register-sourcer-transient)))
@@ -232,8 +280,10 @@
 
 (transient-define-prefix register-sourcer-transient ()
   "Регистр - приемник света"
-  ["Регистр - приемник Света Информации (КУДА?)"
-   :description "Регистр - приемник Света Информации (КУДА?)"
+  [
+   ("INFO" "КУДА" (lambda () (interactive) (message "ОТКУДА?"))
+    :description "КУДА отправляется Свет Информации?"
+    :face 'magenta-for-asm)
    ("ra" "RAX (Accumulator)" (lambda () (interactive) (insert "%rax") (finish-instruction))
     :description "RAX (Accumulator) - ВЕЧНОЕ - КОРОЛЕВСКАЯ ЗВЕЗДА ФОМАЛЬГАУТ"
     :face 'gold-for-asm)
@@ -241,11 +291,11 @@
    ("rc" "RCX (Counter Register)" (lambda () (interactive) (insert "%rcx") (finish-instruction)))
    ("ri" "RIP (Instruction Pointer)" (lambda () (interactive) (insert "%rip") (finish-instruction))
     :description "RIP - НАСТОЯЩЕЕ - КОРОЛЕВСКАЯ ЗВЕЗДА РЕГУЛ"
-    :face 'red-for-asm)
+    :face 'light-gray-for-asm)
    ("rb" "RBP" (lambda () (interactive (insert "%rbp\n") (finish-instruction))))
    ("rs" "RSP" (lambda () (interactive) (insert "%rsp") (finish-instruction))
     :description "RSP - БУДУЩЕЕ В ВЕЛИКОМ КУБЕ - КОРОЛЕВСКАЯ ЗВЕЗДА АЛЬДЕБАРАН"
-    :face 'blue-for-asm)
+    :face 'violet-for-asm)
    ("rd" "RDX (Data Register)" (lambda () (interactive) (insert "%rdx") (finish-instruction)))
    ("-ra" "(RAX)" (lambda () (interactive) (insert "(%rax)") (finish-instruction)))
    ("-rb" "(RBX)" (lambda () (interactive) (insert "(%rbx)") (finish-instruction)))
@@ -395,7 +445,126 @@
   (interactive)
   (if (string-equal (file-name-extension buffer-file-name) "S")
       (funcall 'magic-asm-transient)
-      (message "ВЕЛИКИЙ АСМ ПРИДАСТ СИЛУ!!!")  
+    (message "ВЕЛИКИЙ АСМ ПРИДАСТ СИЛУ!!!")  
     (newline)))
 
 (define-key global-map (kbd "C-j") 'my-custom-new-line)
+
+
+(transient-define-prefix asm-info ()
+  "справочные материалы для асма"
+  [
+   "справочные материалы для АСМА"
+   ("1" "размеры чисел" (lambda ()
+			  (interactive)
+			  (message "
+Вот размеры чисел для различных директив в ассемблере:
+
+    .byte — байт:
+        Размер: 1 байт (8 бит).
+        Диапазон значений:
+            Для знаковых целых чисел: от -128 до 127.
+            Для беззнаковых целых чисел: от 0 до 255.
+
+    .word — слово:
+        Размер: 2 байта (16 бит).
+        Диапазон значений:
+            Для знаковых целых чисел: от -32,768 до 32,767.
+            Для беззнаковых целых чисел: от 0 до 65,535.
+
+    .long — двойное слово:
+        Размер: 4 байта (32 бита).
+        Диапазон значений:
+            Для знаковых целых чисел: от -2,147,483,648 до 2,147,483,647.
+            Для беззнаковых целых чисел: от 0 до 4,294,967,295.
+    .quad (иногда пишут .quad вместо .quard) — четверное слово:
+        Размер: 8 байт (64 бита).
+        Диапазон значений:
+            Для знаковых целых чисел: от -9,223,372,036,854,775,808 до 9,223,372,036,854,775,807.
+            Для беззнаковых целых чисел: от 0 до 18,446,744,073,709,551,615.
+Эти диапазоны важны, когда ты выбираешь размер переменной, потому что превышение границ приведёт к переполнению или неправильной интерпретации данных.
+")))
+   ("g" "global - ГЛОБАЛЬНЫЕ ДАННЫЕ" (lambda ()
+				       (interactive)
+				       (asm-info-data-section)))
+   ("q" "quit" transient-quit-one)
+   ])
+
+(defun parse-section-string (input)
+  "Парсит строку INPUT и возвращает список пар (ключ . значение)."
+  (let ((result '()))
+    ;; Разделяем строку по пробелам и табуляциям
+    (dolist (item (split-string input "[ \t]+" t))
+      ;; Ищем ключи и значения по двоеточию
+      (when (string-match "\\(.*?\\):\\s-*\\(.*\\)" item)
+        (let ((key (match-string 1 item))
+              (value (match-string 2 item)))
+          (push (cons key value) result)))))
+  (nreverse result))
+
+
+(defun asm-info-data-section ()
+  "Парсим данные и выводим из секций для данных"
+  (let ((header (format "%-20s | %-20s\n" "ASM-DATA" "ASM-VALUE"))
+	(separator (make-string 45 ?-))
+	(table-rows ""))
+    (dolist (i (asm-file-to-list (buffer-file-name))) 
+      (setq table-rows
+	    (concat table-rows (format "%-20s | %-20s\n" "ASM-DATA:" i))))
+    (message "\n%s\n%s\n%s" header separator table-rows)))
+
+(defun asm-file-to-list (file-path)
+  "Прочитать файл с ассемблерным кодом и вернуть его содержимое как список строк."
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    ;; t для удаления пустых строк
+    (split-string (buffer-string) "\n" t)))
+;;;(asm-file-to-list "../asm.S")
+;;(asm-parse-sections "../asm.S")
+(defun asm-file-to-list (file-path)
+  "Прочитать файл с ассемблерным кодом и вернуть его содержимое как список строк, исключая строки после .section .text."
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    (let ((result '())
+          (found-text-section nil))  ;; Переменная для отслеживания нахождения .section .text
+      (dolist (line (split-string (buffer-string) "\n" t))
+        (if (and (not found-text-section) (string-match-p "\\.section[ \t]+\\.text" line))
+            (setq found-text-section t)  ;; Если встретили .section .text, помечаем
+          (when (not found-text-section)
+            (push line result))))  ;; Добавляем строку в результат, если не встретили .section .text
+      (nreverse result))))  ;; Возвращаем результат в правильном порядке
+
+
+(defun asm-parse-sections (file-path)
+  "Прочитать файл с ассемблерным кодом и извлечь переменные из секций .data и .bss."
+  (let ((data-section-vars '())
+        (bss-section-vars '())
+        (current-section nil))
+    (with-temp-buffer
+      (insert-file-contents file-path)
+      (dolist (line (split-string (buffer-string) "\n" t))
+        (cond
+         ;; Проверяем, начинается ли секция .data
+         ((string-match "^\\s-*\\.data" line)
+          (setq current-section '.data))
+
+         ;; Проверяем, начинается ли секция .bss
+         ((string-match "^\\s-*\\.bss" line)
+          (setq current-section '.bss))
+
+         ;; Проверяем, если находимся в секции .data, и захватываем переменные
+         ((and (eq current-section '.data)
+               (string-match "^\\s-*\\([a-zA-Z0-9_]+\\):" line))
+          (let ((var-name (match-string 1 line)))
+            (push var-name data-section-vars)))
+
+         ;; Проверяем, если находимся в секции .bss, и захватываем переменные
+         ((and (eq current-section '.bss)
+               (string-match "^\\s-*\\([a-zA-Z0-9_]+\\):" line))
+          (let ((var-name (match-string 1 line)))
+            (push var-name bss-section-vars))))))
+    ;; Возвращаем список с переменными из обеих секций
+    (list :data (reverse data-section-vars)
+          :bss (reverse bss-section-vars))))
+
+
