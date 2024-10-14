@@ -1,6 +1,3 @@
-;;;;global section
-(setq asm-name-number-data "")
-
 (transient-define-prefix magic-asm-transient ()
   "Магические команды Великого АСМА"
   [
@@ -37,17 +34,22 @@
 						 (indent-for-tab-command)
 						 (insert (format "mov %s\(%%rip\), " (substring (helm-asm-parse-data) 0 -1)))
 						 (register-sourcer-transient)))
-    ("-mw" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
+    ("-mb" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ (размер 1 байт)" (lambda ()
+						 (interactive)
+						 (indent-for-tab-command)
+						 (insert (format "movb %s\(%%rip\), " (substring (helm-asm-parse-data) 0 -1)))
+						 (register-sourcer-transient)))
+    ("-mw" "movw ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
 						 (interactive)
 						 (indent-for-tab-command)
 						 (insert (format "movw %s\(%%rip\), " (substring (helm-asm-parse-data) 0 -1)))
 						 (register-sourcer-transient)))
-    ("-ml" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
+    ("-ml" "movl ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
 						 (interactive)
 						 (indent-for-tab-command)
 						 (insert (format "movl %s\(%%rip\), " (substring (helm-asm-parse-data) 0 -1)))
 						 (register-sourcer-transient)))
-    ("-mq" "mov ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
+    ("-mq" "movq ПЕРЕМЕСТИТЬ ИЗ МЕСТА В ПАМЯТИ" (lambda ()
 						 (interactive)
 						 (indent-for-tab-command)
 						 (insert (format "movq %s\(%%rip\), " (substring (helm-asm-parse-data) 0 -1)))
@@ -55,7 +57,7 @@
     ("le" "lea ЗАГРУЗИТЬ АДРЕС ПЕРЕМЕННОЙ" (lambda () 
 					     (interactive)
 					     (indent-for-tab-command)
-					     (insert (format "\lea %s(%%rip), " (read-string "какую переменную загрузить? "))) 
+					     (insert (format "\lea %s(%%rip), " (substring (helm-asm-parse-data) 0 -1)))
 					     (register-sourcer-transient)))
        ;;;;----место для добавления перемещений
     ]
@@ -265,6 +267,7 @@
    ("-rb" "(RBX)" (lambda () (interactive) (insert "(%rbx), ") (register-sourcer-transient)))
    ("-rc" "(RCX)" (lambda () (interactive) (insert "(%rcx), ") (register-sourcer-transient)))
    ("-rd" "(RDX)" (lambda () (interactive) (insert "(%rdx), ") (register-sourcer-transient)))
+   ("-rs" "(RSP)" (lambda () (interactive) (insert "(%rsp), ") (register-sourcer-transient)))
    ]
   ["Подсекции RAX"
    ("ea" "EAX (32-битный)" (lambda () (interactive) (insert "%eax, ") (register-sourcer-transient)))
@@ -316,6 +319,7 @@
    ("-rb" "(RBX)" (lambda () (interactive) (insert "(%rbx)") (finish-instruction)))
    ("-rc" "(RCX)" (lambda () (interactive) (insert "(%rcx)") (finish-instruction)))
    ("-rd" "(RDX)" (lambda () (interactive) (insert "(%rdx)") (finish-instruction)))
+   ("-rs" "(RSP)" (lambda () (interactive) (insert "(%rsp)") (finish-instruction)))
    ("0" "ТВОЙ ВАРИАНТ" (lambda () 
                          (interactive)
                          (let ((user-input (read-string (propertize "что напишем? " 'face '(:foreground "orange" :weight bold)))))
